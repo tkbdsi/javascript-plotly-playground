@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Basic Plotly</title>
+  <script src="plotly-2.12.1.min.js"></script>
+</head>
+<body>
+  
+  <div id="plotlyPlot" style="width:600px;height:400px;text-align:left;"></div>
+
+  <div style="display: flex; flex-direction: row; justify-content: center">
+    <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 1 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="25" id="val1" /></span>
+    <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 2 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="35" id="val2" /></span>
+    <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 3 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="45" id="val3" /></span>
+  </div>
+
+</body>
+
+<script>
+  const plotlyPlot = document.getElementById('plotlyPlot');
+  const val1 = document.getElementById('val1');
+  const val2 = document.getElementById('val2');
+  const val3 = document.getElementById('val3');
+
+  let x = [val1.value];
+  let y = [val2.value];
+
+  document.addEventListener('DOMContentLoaded', () => {
+
+    Plotly.newPlot( plotlyPlot, [{
+	      x: x,
+	      y: y }], {
+	      margin: { t: 10 } } );
+
+    val1.addEventListener('change', () => {
+      let x = [val1.value];
+      Plotly.newPlot( plotlyPlot, [{
+	      x: x,
+	      y: y }], {
+	      margin: { t: 10 } } );
+    })
+    val2.addEventListener('change', () => {
+      let y = [val2.value];
+      Plotly.newPlot( plotlyPlot, [{
+	      x: x,
+	      y: y }], {
+	      margin: { t: 10 } } );
+    })
+  })
+  
+</script>
+</html>
