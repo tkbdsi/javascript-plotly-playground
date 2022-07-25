@@ -35,6 +35,10 @@
   // const val3 = document.getElementById('val3');
   const btnRandomlyAddValues = document.getElementById('btnRandomlyAddValues');
 
+  // For More Information about the generateBoxMullerPairs function see 
+  // the following wikipedia reference: https://en.wikipedia.org/wiki/Box–Muller_transform
+  // Can generate a pair of random numbers from two uniform distributions then transform
+  // the output based on a mu and sigma
   class PseudoNormalDistribution {
     constructor(mu = 0.0, sigma = 1.0) {
       this.mu = mu;
@@ -54,11 +58,15 @@
     }
   }
 
-  const PseudoGaussian = new PseudoNormalDistribution();
+  const PseudoGaussianX = new PseudoNormalDistribution(5,1);
+  const PseudoGaussianY = new PseudoNormalDistribution(10,2);
 
-  let [rng1, rng2] = PseudoGaussian.generateBoxMullerPairs();
+  let [rng1, rng2] = PseudoGaussianX.generateBoxMullerPairs();
+  let [rng3, rng4] = PseudoGaussianY.generateBoxMullerPairs();
   let x = [rng1]
-  let y = [rng2];
+  let y = [rng3];
+  let xe = [Math.abs(rng2)*0.02];
+  let ye = [Math.abs(rng4)*0.20];
 
   console.log(x, y)
 
@@ -66,39 +74,84 @@
 
     Plotly.newPlot( plotlyPlot, [{
 	      x: x,
-	      y: y }], {
-	      margin: { t: 10 } } );
+	      y: y }]
+    );
 
     btnRandomlyAddValues.addEventListener('click', () => {
-      [rng1, rng2] = PseudoGaussian.generateBoxMullerPairs();
+      [rng1, rng2] = PseudoGaussianX.generateBoxMullerPairs();
+      [rng3, rng4] = PseudoGaussianY.generateBoxMullerPairs();      
       x = [...x, rng1];
-      y = [...y, rng2];
+      y = [...y, rng3];
+      xe = x.map(val => Math.abs(rng2)*(Math.floor(Math.random() * (0.20 - 0.01)) + 0.01));
+      ye = y.map(val => Math.abs(rng4)*(Math.floor(Math.random() * (0.40 - 0.01)) + 0.01));
 
-      console.log(x, y)
+      let trace1 = {
+        x: x,
+        y: y,
+        error_x: {
+          type: 'data',
+          array: xe,
+          visible: true
+        },
+        error_y: {
+          type: 'data',
+          array: ye,
+          visible: true,
+          color: '#85144B',
+        },
+        mode: 'markers',
+        marker: {
+          size: 4,
+          line: {
+            width: 0.5
+          },
+          opacity: 0.8,
+          color: '#85144B',
+        },
+        type: 'scatter',
+        name: 'x and y'
+      };
 
-      Plotly.newPlot( plotlyPlot, [{
-	      x: x,
-	      y: y }], {
-	      margin: { t: 10 } } );
-    })
+      let data = [trace1];
 
+      let formatting = {
+        margin: {t:50,r:50,b:40,l:50},
+        title: 'Learning About Error Plots',
+        xaxis: {
+          showgrid: true,
+          zeroline: true,
+          showline: true,
+          mirror: 'ticks',
+          gridcolor: '#bdbdbd',
+          gridwidth: 1,
+          zerolinecolor: '#969696',
+          zerolinewidth: 1,
+          linecolor: '#636363',
+          linewidth: 2,
+          range: [0,100],
+          title: 'x axis',
+        },
+        yaxis: {
+          showgrid: true,
+          zeroline: true,
+          showline: true,
+          mirror: 'ticks',
+          gridcolor: '#bdbdbd',
+          gridwidth: 1,
+          zerolinecolor: '#969696',
+          zerolinewidth: 1,
+          linecolor: '#636363',
+          linewidth: 2,
+          range: [0,100],
+          title: 'y axis',
+        }
+      };
 
-    // val1.addEventListener('change', () => {
-    //   let x = [...x, val1.value];
-    //   Plotly.newPlot( plotlyPlot, [{
-	  //     x: x,
-	  //     y: y }], {
-	  //     margin: { t: 10 } } );
-    // })
-    
-    // val2.addEventListener('change', () => {
-    //   let y = [val2.value];
-    //   Plotly.newPlot( plotlyPlot, [{
-	  //     x: x,
-	  //     y: y }], {
-	  //     margin: { t: 10 } } );
-    // })
+      Plotly.newPlot( plotlyPlot, data, formatting)
   })
+
+})
+
   
 </script>
 </html>
