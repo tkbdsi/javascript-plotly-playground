@@ -11,22 +11,56 @@
   
   <div id="plotlyPlot" style="width:600px;height:400px;text-align:left;"></div>
 
-  <div style="display: flex; flex-direction: row; justify-content: center">
-    <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 1 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="25" id="val1" /></span>
-    <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 2 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="35" id="val2" /></span>
-    <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 3 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="45" id="val3" /></span>
+  <div style="display: flex; flex-direction: column; align-items: center">
+    
+    <!-- <div style="display: flex; flex-direction: row; justify-content: center">
+        <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 1 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="25" id="val1" /></span>
+        <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 2 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="35" id="val2" /></span>
+        <span style="display: flex; flex-direction: column; margin: 5px"><p>Value 3 </p><input type="number" style="line-height: 1.5; font-size: 1.1rem; width: 6ch" value="45" id="val3" /></span>
+    </div> -->
+
+    <div>
+      <button id="btnRandomlyAddValues">Randomly Pull New Value from Distribution</button>
+    </div>
+
   </div>
 
+  
 </body>
 
 <script>
   const plotlyPlot = document.getElementById('plotlyPlot');
-  const val1 = document.getElementById('val1');
-  const val2 = document.getElementById('val2');
-  const val3 = document.getElementById('val3');
+  // const val1 = document.getElementById('val1');
+  // const val2 = document.getElementById('val2');
+  // const val3 = document.getElementById('val3');
+  const btnRandomlyAddValues = document.getElementById('btnRandomlyAddValues');
 
-  let x = [val1.value];
-  let y = [val2.value];
+  class PseudoNormalDistribution {
+    constructor(mu = 0.0, sigma = 1.0) {
+      this.mu = mu;
+      this.sigma = sigma;
+    }
+
+    generateBoxMullerPairs() {
+      let u = 0.0;
+      let v = 0.0;
+      while( u === 0.0) u = Math.random();
+      while( v === 0.0) v = Math.random();
+      const mag = this.sigma * Math.sqrt( -2.0 * Math.log(u));
+      const z0 = mag * Math.cos(2.0*Math.PI * v) + this.mu;
+      const z1 = mag * Math.sin(2.0*Math.PI * v) + this.mu;
+      console.log(z0, z1)
+      return [z0, z1];
+    }
+  }
+
+  const PseudoGaussian = new PseudoNormalDistribution();
+
+  let [rng1, rng2] = PseudoGaussian.generateBoxMullerPairs();
+  let x = [rng1]
+  let y = [rng2];
+
+  console.log(x, y)
 
   document.addEventListener('DOMContentLoaded', () => {
 
@@ -35,20 +69,35 @@
 	      y: y }], {
 	      margin: { t: 10 } } );
 
-    val1.addEventListener('change', () => {
-      let x = [val1.value];
+    btnRandomlyAddValues.addEventListener('click', () => {
+      [rng1, rng2] = PseudoGaussian.generateBoxMullerPairs();
+      x = [...x, rng1];
+      y = [...y, rng2];
+
+      console.log(x, y)
+
       Plotly.newPlot( plotlyPlot, [{
 	      x: x,
 	      y: y }], {
 	      margin: { t: 10 } } );
     })
-    val2.addEventListener('change', () => {
-      let y = [val2.value];
-      Plotly.newPlot( plotlyPlot, [{
-	      x: x,
-	      y: y }], {
-	      margin: { t: 10 } } );
-    })
+
+
+    // val1.addEventListener('change', () => {
+    //   let x = [...x, val1.value];
+    //   Plotly.newPlot( plotlyPlot, [{
+	  //     x: x,
+	  //     y: y }], {
+	  //     margin: { t: 10 } } );
+    // })
+    
+    // val2.addEventListener('change', () => {
+    //   let y = [val2.value];
+    //   Plotly.newPlot( plotlyPlot, [{
+	  //     x: x,
+	  //     y: y }], {
+	  //     margin: { t: 10 } } );
+    // })
   })
   
 </script>
